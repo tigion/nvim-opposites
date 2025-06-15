@@ -25,6 +25,6 @@ end
 
 M.switch = opposite.switch_word_to_opposite_word
 
-M.next = case.switch_to_next_case_type
+M.next = case.switch_word_to_next_case_type
 
 return M

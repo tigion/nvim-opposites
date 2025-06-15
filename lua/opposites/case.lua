@@ -242,7 +242,7 @@ local function find_word_in_line(line, row)
   while true do
     word_start, word_end = line:find(pattern, (word_end or 0) + 1)
     if word_start == nil then break end
-    if word_start <= row and word_end >= row then
+    if word_start <= row + 1 and word_end >= row + 1 then
       local word = line:sub(word_start, word_end)
       return word, word_start, word_end
     end
@@ -257,14 +257,23 @@ function M.switch_word_to_next_case_type()
   local row, col = unpack(vim.api.nvim_win_get_cursor(0))
   -- local cursor = { row = row, col = col }
 
-  local word, word_start, word_end = find_word_in_line(line, row)
+  local word, word_start, word_end = find_word_in_line(line, col)
+  if word == nil then
+    local row_col_str = '[' .. row .. ':' .. col + 1 .. ']'
+    notify.info(row_col_str .. ' No word found')
+    return
+  end
 
   -- Checks if the word is nil or empty.
   if word == nil or word == '' then return end
 
   local new_word = switch_to_next_case_type(word)
 
-  if new_word == false then return end
+  if new_word == false then
+    local row_col_str = '[' .. row .. ':' .. col + 1 .. ']'
+    notify.info(row_col_str .. ' Word `' .. word .. '` is an unsupported case type')
+    return
+  end
 
   -- local new_line = replace_word_in_line(line, word, new_word)
   local left_part = string.sub(line, 1, word_start - 1)
@@ -275,15 +284,11 @@ function M.switch_word_to_next_case_type()
   -- Corrects the cursor position if the opposite word is shorter than the word.
   local max_col = word_start - 1 + #new_word - 1
   local new_col = col
+  print(max_col, new_col)
   if new_col > max_col then new_col = max_col end
 
   -- Checks if the cursor position has changed.
-  -- As a callback function, the cursor position is shifted one to the left. -- FIX: Why?
-  if new_col ~= col then
-    -- Restores the cursor position.
-    new_col = col
-    vim.api.nvim_win_set_cursor(0, { row, new_col })
-  end
+  if new_col ~= col then vim.api.nvim_win_set_cursor(0, { row, new_col }) end
 
   if config.options.notify.found then
     local row_col_str = '[' .. row .. ':' .. col + 1 .. ']'
