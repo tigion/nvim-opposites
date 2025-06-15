@@ -8,10 +8,19 @@ local M = {}
 ---@field use_default_opposites_by_ft? boolean Whether to use the default opposites.
 ---@field opposites? opposites.Config.opposites The words with their opposite.
 ---@field opposites_by_ft? opposites.Config.opposites_by_ft The file type specific words with their opposite.
+---@field case_types? opposites.Config.case_types The case types to parse.
 ---@field notify? opposites.Config.notify The notifications to show.
 
 ---@alias opposites.Config.opposites table<string, string>
 ---@alias opposites.Config.opposites_by_ft table<string, opposites.Config.opposites>
+
+---@class opposites.Config.case_types
+---@field snake_case? boolean Whether to parse snake_case.
+---@field screaming_snake_case? boolean Whether to parse SCREAMING_SNAKE_CASE.
+---@field kebab_case? boolean Whether to parse kebab-case.
+---@field screaming_kebab_case? boolean Whether to parse SCREAMING-KEBAB-CASE.
+---@field camel_case? boolean Whether to parse camelCase.
+---@field pascal_case? boolean Whether to parse PascalCase.
 
 ---@class opposites.Config.notify
 ---@field found? boolean Whether to notify when a word is found.
@@ -43,6 +52,14 @@ local defaults = {
     ['sql'] = {
       ['asc'] = 'desc',
     },
+  },
+  case_types = {
+    snake_case = true,
+    screaming_snake_case = true,
+    kebab_case = true,
+    screaming_kebab_case = true,
+    camel_case = true,
+    pascal_case = true,
   },
   notify = {
     found = false,

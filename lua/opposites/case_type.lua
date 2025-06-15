@@ -2,12 +2,12 @@ local config = require('opposites.config')
 local notify = require('opposites.notify')
 local util = require('opposites.util')
 
----@class opposites.cases
+---@class opposites.case_type
 local M = {}
 
 -- TODO: Needs refactoring.
 
----@class opposites.cases.Result
+---@class opposites.case_type.Result
 ---@field parts table
 ---@field case_type number
 
@@ -23,7 +23,7 @@ local CASE_TYPES = {
 
 ---Parses snake_case.
 ---@param word string
----@return opposites.cases.Result|boolean
+---@return opposites.case_type.Result|boolean
 local function parse_snake_case(word)
   local parts = {}
   local part, tail = word:match('^(%l+%d*)(.+)')
@@ -41,7 +41,7 @@ end
 
 ---Parses SCREAMING_SNAKE_CASE.
 ---@param word string
----@return opposites.cases.Result|boolean
+---@return opposites.case_type.Result|boolean
 local function parse_screaming_snake_case(word)
   local parts = {}
   local part, tail = word:match('^(%u+%d*)(.+)')
@@ -59,7 +59,7 @@ end
 
 ---Parses kebab-case.
 ---@param word string
----@return opposites.cases.Result|boolean
+---@return opposites.case_type.Result|boolean
 local function parse_kebab_case(word)
   local parts = {}
   local part, tail = word:match('^(%l+%d*)(.+)')
@@ -77,7 +77,7 @@ end
 
 ---Parses SCREAMING-KEBAB-CASE.
 ---@param word string
----@return opposites.cases.Result|boolean
+---@return opposites.case_type.Result|boolean
 local function parse_screaming_kebab_case(word)
   local parts = {}
   local part, tail = word:match('^(%u+%d*)(.+)')
@@ -95,7 +95,7 @@ end
 
 ---Parses camelCase.
 ---@param word string
----@return opposites.cases.Result|boolean
+---@return opposites.case_type.Result|boolean
 local function parse_camel_case(word)
   local parts = {}
   local part, tail = word:match('^(%l+%d*)(.+)')
@@ -113,7 +113,7 @@ end
 
 ---Parses PascalCase.
 ---@param word string
----@return opposites.cases.Result|boolean
+---@return opposites.case_type.Result|boolean
 local function parse_pascal_case(word)
   local parts = {}
   local part, tail = word:match('^(%u%l+%d*)(.+)')
@@ -131,14 +131,16 @@ end
 
 ---Parses supported case type.
 ---@param word string
----@return opposites.cases.Result|boolean
+---@return opposites.case_type.Result|boolean
 local function parse_supported_case_type(word)
-  return parse_snake_case(word)
-    or parse_screaming_snake_case(word)
-    or parse_kebab_case(word)
-    or parse_screaming_kebab_case(word)
-    or parse_camel_case(word)
-    or parse_pascal_case(word)
+  return (
+    config.options.case_types.snake_case and parse_snake_case(word)
+    or config.options.case_types.screaming_snake_case and parse_screaming_snake_case(word)
+    or config.options.case_types.kebab_case and parse_kebab_case(word)
+    or config.options.case_types.screaming_kebab_case and parse_screaming_kebab_case(word)
+    or config.options.case_types.camel_case and parse_camel_case(word)
+    or config.options.case_types.pascal_case and parse_pascal_case(word)
+  ) or false
 end
 
 ---Converts to snake_case or SCREAMING_SNAKE_CASE.
@@ -238,6 +240,9 @@ local function switch_to_next_case_type(word)
 
   -- Gets next case type.
   local new_case_type = (result.case_type + 1) % util.table_length(CASE_TYPES)
+
+  -- TODO: Filter out deactivated case types.
+  --       - config.options.case_types
 
   -- Returns converted word based on bext case type.
   return convert_word_to_case_type(word, new_case_type)
