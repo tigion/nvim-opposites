@@ -1,7 +1,7 @@
 local notify = require('opposites.notify')
 local config = require('opposites.config')
 local opposite = require('opposites.opposite')
-local case = require('opposites.case')
+local case_type = require('opposites.case_type')
 
 ---@class opposites
 local M = {}
@@ -25,6 +25,8 @@ end
 
 M.switch = opposite.switch_word_to_opposite_word
 
-M.next = case.switch_word_to_next_case_type
+M.case_type = {}
+
+M.case_type.next = case_type.switch_word_to_next_case_type
 
 return M

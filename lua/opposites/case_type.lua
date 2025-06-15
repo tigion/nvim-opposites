@@ -219,6 +219,14 @@ local function convert_word_to_case_type(word, case_type)
   return false
 end
 
+---Switches the given word to its next case type.
+---
+---Example:
+---
+---    foo_bar -> FOO_BAR -> foo-bar -> FOO-BAR -> fooBar -> FooBar -> foo_bar
+---
+---@param word string The word to switch.
+---@return string|boolean # The next case type or false if not supported.
 local function switch_to_next_case_type(word)
   -- Exits if word is nil or empty.
   if word == nil or word == '' then return false end
@@ -235,14 +243,38 @@ local function switch_to_next_case_type(word)
   return convert_word_to_case_type(word, new_case_type)
 end
 
-local function find_word_in_line(line, row)
+---Returns the word with start and end position
+---in the line under the cursor.
+--
+-- INFO: Supports currently only words with alphanumeric characters,
+--       underscores and dashes.
+--
+--         |
+--     foo_bar          <- cursor in word
+--         |
+-- 45678901234567890123 <- index in line
+-- 34567890123456789012 <- column
+--     ^ ^ |   ^
+--         ^            <- cursor position
+--
+--        word len:  7
+--      word start:  8
+--        word end: 14
+--             col: 11 (12)
+--
+---@param line string The line string to search in.
+---@param col integer The cursors column position.
+---@return string|nil # The word or nil if not found.
+---@return integer|nil # The start index of the word or nil.
+---@return integer|nil # The end index of the word or nil.
+local function find_word_in_line(line, col)
   local pattern = '[a-zA-z0-9_-]+'
   local word_start, word_end
 
   while true do
-    word_start, word_end = line:find(pattern, (word_end or 0) + 1)
+    word_start, word_end = string.find(line, pattern, (word_end or 0) + 1)
     if word_start == nil then break end
-    if word_start <= row + 1 and word_end >= row + 1 then
+    if word_start <= col + 1 and word_end >= col + 1 then
       local word = line:sub(word_start, word_end)
       return word, word_start, word_end
     end
@@ -251,15 +283,16 @@ local function find_word_in_line(line, row)
   return nil
 end
 
+---Switches the word under the cursor to its next case type.
 function M.switch_word_to_next_case_type()
   -- Gets the current line string and the current cursor position.
   local line = vim.api.nvim_get_current_line()
   local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-  -- local cursor = { row = row, col = col }
+  local cursor = { row = row, col = col }
 
-  local word, word_start, word_end = find_word_in_line(line, col)
-  if word == nil then
-    local row_col_str = '[' .. row .. ':' .. col + 1 .. ']'
+  local word, word_start, word_end = find_word_in_line(line, cursor.col)
+  if word == nil and config.options.notify.not_found then
+    local row_col_str = '[' .. cursor.row .. ':' .. cursor.col + 1 .. ']'
     notify.info(row_col_str .. ' No word found')
     return
   end
@@ -267,15 +300,15 @@ function M.switch_word_to_next_case_type()
   -- Checks if the word is nil or empty.
   if word == nil or word == '' then return end
 
+  -- Gets the next case type and checks if the word is supported.
   local new_word = switch_to_next_case_type(word)
-
-  if new_word == false then
-    local row_col_str = '[' .. row .. ':' .. col + 1 .. ']'
+  if new_word == false and config.options.notify.not_found then
+    local row_col_str = '[' .. cursor.row .. ':' .. cursor.col + 1 .. ']'
     notify.info(row_col_str .. ' Word `' .. word .. '` is an unsupported case type')
     return
   end
 
-  -- local new_line = replace_word_in_line(line, word, new_word)
+  -- Replaces the found word in the current line.
   local left_part = string.sub(line, 1, word_start - 1)
   local right_part = string.sub(line, word_end + 1)
   local new_line = left_part .. new_word .. right_part
@@ -283,15 +316,16 @@ function M.switch_word_to_next_case_type()
 
   -- Corrects the cursor position if the opposite word is shorter than the word.
   local max_col = word_start - 1 + #new_word - 1
-  local new_col = col
+  local new_col = cursor.col
   print(max_col, new_col)
   if new_col > max_col then new_col = max_col end
 
   -- Checks if the cursor position has changed.
-  if new_col ~= col then vim.api.nvim_win_set_cursor(0, { row, new_col }) end
+  if new_col ~= cursor.col then vim.api.nvim_win_set_cursor(0, { cursor.row, new_col }) end
 
+  -- Shows a success notification if the option is activated.
   if config.options.notify.found then
-    local row_col_str = '[' .. row .. ':' .. col + 1 .. ']'
+    local row_col_str = '[' .. cursor.row .. ':' .. cursor.col + 1 .. ']'
     notify.info(row_col_str .. ' ' .. word .. ' -> ' .. new_word)
   end
 end
