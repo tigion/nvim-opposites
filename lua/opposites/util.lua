@@ -1,6 +1,18 @@
 ---@class opposites.util
 local M = {}
 
+---Returns the length of a table.
+---@param t table
+---@return number
+function M.table_length(t)
+  if type(t) ~= 'table' then return -1 end
+  local count = 0
+  for _ in pairs(t) do
+    count = count + 1
+  end
+  return count
+end
+
 ---Returns true if the given word has uppercase characters.
 ---@param word string The word to check.
 ---@return boolean # True if the word has uppercase characters.
