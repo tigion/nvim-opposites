@@ -37,22 +37,18 @@ local function use_module(module)
     return
   end
 
-  if module == 'opposites' then
+  if module == 'opposites' and config.options.opposites.enabled then
     opposites.switch_word_to_opposite_word(line, cursor)
-  elseif module == 'cases' then
+  elseif module == 'cases' and config.options.cases.enabled then
     cases.switch_word_to_next_case_type(line, cursor)
   end
 end
 
-use_module('opposites')
-
 -- Opposites
--- M.switch = opposites.switch_word_to_opposite_word
 M.switch = use_module('opposites')
 
 -- Cases
 M.cases = {
-  -- next = cases.switch_word_to_next_case_type,
   next = use_module('cases'),
 }
 
