@@ -142,17 +142,19 @@ function M.replace_result_in_current_line(result)
 end
 
 ---Switches the word under the cursor to its opposite word.
-function M.switch_word_to_opposite_word()
-  -- Gets the current line string and the current cursor position.
-  local line = vim.api.nvim_get_current_line()
-  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-  local cursor = { row = row, col = col }
-
-  -- Checks the max allowed line length.
-  if line:len() > config.options.max_line_length then
-    notify.error('Line too long: ' .. line:len() .. ' (max: ' .. config.options.max_line_length .. ')')
-    return
-  end
+---@param line string The line string to search in.
+---@param cursor { row: integer, col: integer } The cursors position.
+function M.switch_word_to_opposite_word(line, cursor)
+  -- -- Gets the current line string and the current cursor position.
+  -- local line = vim.api.nvim_get_current_line()
+  -- local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+  -- local cursor = { row = row, col = col }
+  --
+  -- -- Checks the max allowed line length.
+  -- if line:len() > config.options.max_line_length then
+  --   notify.error('Line too long: ' .. line:len() .. ' (max: ' .. config.options.max_line_length .. ')')
+  --   return
+  -- end
 
   -- Finds words or their opposite in the current line near the cursor.
   local results = find_results(line, cursor)

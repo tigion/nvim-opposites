@@ -182,17 +182,19 @@ local function find_word_in_line(line, col)
 end
 
 ---Switches the word under the cursor to its next case type.
-function M.switch_word_to_next_case_type()
+---@param line string The line string to search in.
+---@param cursor { row: integer, col: integer } The cursors position.
+function M.switch_word_to_next_case_type(line, cursor)
   -- Gets the current line string and the current cursor position.
-  local line = vim.api.nvim_get_current_line()
-  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-  local cursor = { row = row, col = col }
-
-  -- Checks the max allowed line length.
-  if line:len() > config.options.max_line_length then
-    notify.error('Line too long: ' .. line:len() .. ' (max: ' .. config.options.max_line_length .. ')')
-    return
-  end
+  -- local line = vim.api.nvim_get_current_line()
+  -- local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+  -- local cursor = { row = row, col = col }
+  --
+  -- -- Checks the max allowed line length.
+  -- if line:len() > config.options.max_line_length then
+  --   notify.error('Line too long: ' .. line:len() .. ' (max: ' .. config.options.max_line_length .. ')')
+  --   return
+  -- end
 
   -- Finds the word in the current line.
   local word, word_start, word_end = find_word_in_line(line, cursor.col)
