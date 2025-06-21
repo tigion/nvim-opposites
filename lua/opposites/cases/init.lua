@@ -184,35 +184,31 @@ end
 ---Switches the word under the cursor to its next case type.
 ---@param line string The line string to search in.
 ---@param cursor { row: integer, col: integer } The cursors position.
-function M.switch_word_to_next_case_type(line, cursor)
-  -- Gets the current line string and the current cursor position.
-  -- local line = vim.api.nvim_get_current_line()
-  -- local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-  -- local cursor = { row = row, col = col }
-  --
-  -- -- Checks the max allowed line length.
-  -- if line:len() > config.options.max_line_length then
-  --   notify.error('Line too long: ' .. line:len() .. ' (max: ' .. config.options.max_line_length .. ')')
-  --   return
-  -- end
-
+---@param quiet? boolean Whether to show a notification.
+---@return boolean # Whether the word was found.
+function M.switch_word_to_next_case_type(line, cursor, quiet)
+  quiet = quiet or false
   -- Finds the word in the current line.
   local word, word_start, word_end = find_word_in_line(line, cursor.col)
-  if word == nil and config.options.notify.not_found then
-    local row_col_str = '[' .. cursor.row .. ':' .. cursor.col + 1 .. ']'
-    notify.info(row_col_str .. ' No word found')
-    return
+  if word == nil then
+    if not quiet and config.options.notify.not_found then
+      local row_col_str = '[' .. cursor.row .. ':' .. cursor.col + 1 .. ']'
+      notify.info(row_col_str .. ' No word found')
+    end
+    return false
   end
 
   -- Checks if the word is nil or empty.
-  if word == nil or word == '' then return end
+  if word == nil or word == '' then return false end
 
   -- Gets the next case type and checks if the word is supported.
   local new_word = switch_to_next_case_type(word)
-  if new_word == false and config.options.notify.not_found then
-    local row_col_str = '[' .. cursor.row .. ':' .. cursor.col + 1 .. ']'
-    notify.info(row_col_str .. ' Word `' .. word .. '` is an unsupported case type')
-    return
+  if new_word == false then
+    if not quiet and config.options.notify.not_found then
+      local row_col_str = '[' .. cursor.row .. ':' .. cursor.col + 1 .. ']'
+      notify.info(row_col_str .. ' Word `' .. word .. '` is an unsupported case type')
+    end
+    return false
   end
 
   -- Replaces the found word in the current line.
@@ -234,6 +230,8 @@ function M.switch_word_to_next_case_type(line, cursor)
     local row_col_str = '[' .. cursor.row .. ':' .. cursor.col + 1 .. ']'
     notify.info(row_col_str .. ' ' .. word .. ' -> ' .. new_word)
   end
+
+  return true
 end
 
 return M
