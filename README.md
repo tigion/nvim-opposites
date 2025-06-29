@@ -57,7 +57,7 @@ return {
     { '<Leader>i', function() require('opposites').switch() end, desc = 'Switch word' },
     -- { '<Leader>I', function() require('opposites').opposites.switch() end, desc = 'Switch to opposite word' },
     -- { '<Leader>I', function() require('opposites').chains.switch() end, desc = 'Switch to next word' },
-    -- { '<Leader>I', function() require('opposites').cases.switch() end, desc = 'Switch case type' },
+    -- { '<Leader>I', function() require('opposites').cases.switch() end, desc = 'Switch naming convention' },
     -- { '<Leader>I', function() require('opposites').todos.switch() end, desc = 'Switch todo state' },
   },
   ---@type opposites.Config
@@ -67,15 +67,15 @@ return {
 
 ## 🚀 Usage
 
-| Function                                  | Description                                   | Submodule   |
-| ----------------------------------------- | --------------------------------------------- | ----------- |
-| `require('opposites').switch()`           | Uses [all](#switch-all) allowed submodules.   |             |
-| `require('opposites').opposites.switch()` | Only switches to the opposite word.           | [opposites] |
-| `require('opposites').chains.switch()`    | Only switches through the word chain words.   | [chains]    |
-| `require('opposites').cases.switch()`     | Only switches through the naming conventions. | [cases]     |
-| `require('opposites').todos.switch()`     | Only switches through the todo states.        | [todos]     |
+| Function                                  | Description                                           | Module      |
+| ----------------------------------------- | ----------------------------------------------------- | ----------- |
+| `require('opposites').switch()`           | [Uses all allowed modules](#uses-all-allowed-modules) |             |
+| `require('opposites').opposites.switch()` | Switches between opposite words                       | [opposites] |
+| `require('opposites').chains.switch()`    | Switches through word chains                          | [chains]    |
+| `require('opposites').cases.switch()`     | Switches between naming conventions                   | [cases]     |
+| `require('opposites').todos.switch()`     | Switches through todo states                          | [todos]     |
 
-Call one of the functions directly or use it in a key mapping.
+Call the functions directly or use them in a key mapping.
 
 ```lua
 vim.keymap.set('n', '<Leader>i', require('opposites').switch, { desc = 'Switch word' })
@@ -83,10 +83,10 @@ vim.keymap.set('n', '<Leader>i', require('opposites').switch, { desc = 'Switch w
 
 See the [Configuration](#️-configuration) section for the default options.
 
-### Switch All
+### Uses all allowed modules
 
 Call `require('opposites').switch()` to switch to a supported variant of the
-word/string under the cursor. Supported variants are all allowed [submodules](#-submodules).
+word/string under the cursor. Supported variants are all allowed [modules](#-modules).
 
 The allowed submodules can be configured in the `all.modules` table in the
 `opposites.Config` table.
@@ -102,14 +102,14 @@ opts = {
 }
 ```
 
-## 🎁 Submodules
+## 🎁 Modules
 
-| Submodule   | Description                                        |
-| ----------- | -------------------------------------------------- |
-| [opposites] | Switches a word to its opposite word.              |
-| [chains]    | Switches through the words in a word chain.        |
-| [cases]     | Switches through the naming conventions of a word. |
-| [todos]     | Switches through the todo states.                  |
+| Module      | Description                         |
+| ----------- | ----------------------------------- |
+| [opposites] | Switches between opposite words     |
+| [chains]    | Switches through word chains        |
+| [cases]     | Switches between naming conventions |
+| [todos]     | Switches through todo states        |
 
 ### 🧩 opposites
 
