@@ -23,17 +23,15 @@ Other similar or better plugins are:
 
 ## ✨ Features
 
-Finds a word or string under the cursor and replaces it
-with its opposite word or other supported variants.
+Finds a word (string) under the cursor or a pattern in the current line and
+replaces it with one of the following supported variants:
 
 - **Switches between opposite words** (see [opposites]).
   - e.g. `enable` -> `disable`
   - Adapts the capitalization of the replaced word.
-    - e.g. `true`, `True`, `TRUE` -> `false`, `False`, `FALSE`.
-  - The opposite words can be file type specific.
-- **Switches between word chains** (see [chains]).
+    - e.g. `true`, `True`, `tRUe`, `TRUE` -> `false`, `False`, `fALse`, `FALSE`.
+- **Switches through word chains** (see [chains]).
   - e.g. `foo` -> `bar` -> `baz` -> `foo`
-  - The word chains can be file type specific.
 - ⚠️ **Switches between naming conventions** (see [cases]).
   - e.g. `foo_bar` -> `fooBar` -> `FooBar` -> `foo_bar`
 - ⚠️ **Switches through todo states** (see [todos]).
